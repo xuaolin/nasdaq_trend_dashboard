@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import json
 import math
+from io import StringIO
 from pathlib import Path
 from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
+import requests
 import yfinance as yf
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -148,36 +150,132 @@ def rsi_state(v):
     return "Oversold"
 
 
-def fetch_nasdaq100_tickers():
-    # Primary: Wikipedia's current Nasdaq-100 components table.
-    # If this changes or becomes unavailable, breadth will be marked unavailable
-    # rather than causing the entire dashboard to fail.
-    url = "https://en.wikipedia.org/wiki/Nasdaq-100"
+# Emergency constituent fallback. This is used only when both live sources fail.
+# It keeps the breadth calculation operational while clearly marking the source
+# as a fallback in data/technical.json and on the dashboard.
+NASDAQ100_FALLBACK_2026 = [
+    "AAPL", "ABNB", "ADBE", "ADI", "ADP", "ADSK", "AEP", "ALNY", "AMAT", "AMD",
+    "AMGN", "AMZN", "APP", "ARM", "ASML", "AVGO", "AXON", "BKR", "BKNG", "CCEP",
+    "CDNS", "CEG", "CHTR", "CMCSA", "COST", "CPRT", "CRWD", "CSCO", "CSGP", "CSX",
+    "CTAS", "CTSH", "DASH", "DDOG", "DXCM", "EA", "EXC", "FANG", "FAST", "FER",
+    "FTNT", "GEHC", "GILD", "GOOG", "GOOGL", "HON", "IDXX", "INSM", "INTC", "INTU",
+    "ISRG", "KDP", "KHC", "KLAC", "LIN", "LRCX", "MAR", "MCHP", "MDLZ", "MELI",
+    "META", "MNST", "MPWR", "MRVL", "MSFT", "MSTR", "MU", "NFLX", "NVDA", "NXPI",
+    "ODFL", "ORLY", "PANW", "PAYX", "PCAR", "PDD", "PEP", "PLTR", "PYPL", "QCOM",
+    "REGN", "ROP", "ROST", "SBUX", "SHOP", "SNDK", "SNPS", "STX", "TMUS", "TRI",
+    "TSLA", "TTWO", "TXN", "VRSK", "VRTX", "WBD", "WDC", "WDAY", "WMT", "XEL", "ZS",
+]
+
+HTTP_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/151.0 Safari/537.36 NasdaqTrendDashboard/2.1"
+    ),
+    "Accept-Language": "en-US,en;q=0.9",
+}
+
+
+def _normalize_tickers(values):
+    out = []
+    for value in values:
+        t = str(value).strip().upper().replace(".", "-")
+        if t and t != "NAN" and 1 <= len(t) <= 6 and t.replace("-", "").isalnum():
+            out.append(t)
+    return sorted(set(out))
+
+
+def _extract_tickers_from_html(html: str):
+    """Extract a plausible Nasdaq-100 constituent list from HTML tables."""
     try:
-        tables = pd.read_html(url)
-        candidates = []
-        for table in tables:
-            cols = [str(c) for c in table.columns]
-            if "Ticker" in cols or "Ticker symbol" in cols:
-                candidates.append(table)
-        if not candidates:
-            return []
-        table = candidates[0]
-        col = "Ticker" if "Ticker" in table.columns else "Ticker symbol"
-        vals = table[col].astype(str).str.strip().str.replace(".", "-", regex=False).tolist()
-        return sorted(set(x for x in vals if x and x != "nan"))
-    except Exception as e:
-        print("Breadth ticker fetch failed:", e)
+        tables = pd.read_html(StringIO(html))
+    except Exception:
         return []
+
+    candidate_columns = {
+        "ticker", "ticker symbol", "symbol", "代码", "股票代号", "simbolo"
+    }
+    best = []
+    for table in tables:
+        for col in table.columns:
+            if str(col).strip().lower() in candidate_columns:
+                vals = _normalize_tickers(table[col].tolist())
+                # Nasdaq-100 normally has about 100 securities. This prevents an
+                # unrelated small table from being accepted accidentally.
+                if 90 <= len(vals) <= 110 and len(vals) > len(best):
+                    best = vals
+    return best
+
+
+def _fetch_html(url: str):
+    r = requests.get(url, headers=HTTP_HEADERS, timeout=25)
+    r.raise_for_status()
+    return r.text
+
+
+def fetch_nasdaq100_tickers():
+    """
+    Return (tickers, source, status).
+
+    Source priority:
+      1) Wikipedia current-components table with a browser-like User-Agent.
+      2) Nasdaq's official Nasdaq-100 companies page.
+      3) Embedded emergency fallback list.
+    """
+    sources = [
+        ("Wikipedia", "https://en.wikipedia.org/wiki/Nasdaq-100"),
+        ("Nasdaq official", "https://www.nasdaq.com/solutions/nasdaq-100/companies"),
+    ]
+
+    errors = []
+    for source_name, url in sources:
+        try:
+            html = _fetch_html(url)
+            tickers = _extract_tickers_from_html(html)
+            if len(tickers) >= 90:
+                print(f"Breadth constituent source: {source_name} ({len(tickers)} symbols)")
+                return tickers, source_name, "live"
+            errors.append(f"{source_name}: no valid 90-110 symbol table")
+        except Exception as e:
+            errors.append(f"{source_name}: {type(e).__name__}: {e}")
+
+    print("Live breadth constituent sources failed:", " | ".join(errors))
+    fallback = sorted(set(NASDAQ100_FALLBACK_2026))
+    return fallback, "Embedded fallback (2026 list)", "fallback"
+
+
+def _download_breadth_prices(tickers, chunk_size=30):
+    """Download constituents in chunks so one transient batch failure is non-fatal."""
+    frames = []
+    failed_chunks = 0
+    for i in range(0, len(tickers), chunk_size):
+        chunk = tickers[i:i + chunk_size]
+        try:
+            frame = get_close_frame(chunk, period="2y")
+            frames.append(frame)
+        except Exception as e:
+            failed_chunks += 1
+            print(f"Breadth price chunk failed ({i}-{i+len(chunk)-1}):", e)
+
+    if not frames:
+        raise RuntimeError("All breadth price batches failed.")
+
+    close = pd.concat(frames, axis=1)
+    close = close.loc[:, ~close.columns.duplicated()]
+    return close, failed_chunks
 
 
 def calc_breadth():
-    tickers = fetch_nasdaq100_tickers()
+    tickers, source, source_status = fetch_nasdaq100_tickers()
     if len(tickers) < 50:
-        return None, None, 0, "Breadth unavailable: constituent list could not be loaded."
+        return (
+            None, None, 0,
+            "Breadth unavailable: constituent list could not be loaded.",
+            source, "unavailable"
+        )
 
     try:
-        close = get_close_frame(tickers, period="2y")
+        close, failed_chunks = _download_breadth_prices(tickers)
         close = close.dropna(axis=1, how="all")
         latest = close.ffill().iloc[-1]
         ma50 = close.rolling(50, min_periods=50).mean().ffill().iloc[-1]
@@ -189,12 +287,21 @@ def calc_breadth():
         b50 = (latest[valid50] > ma50[valid50]).mean() * 100 if len(valid50) else None
         b200 = (latest[valid200] > ma200[valid200]).mean() * 100 if len(valid200) else None
         count = int(max(len(valid50), len(valid200)))
-        note = f"Calculated from {count} currently downloadable Nasdaq-100 constituents."
-        return safe_float(b50), safe_float(b200), count, note
+
+        status_label = "LIVE" if source_status == "live" else "FALLBACK"
+        chunk_note = f"; {failed_chunks} price batch(es) failed" if failed_chunks else ""
+        note = (
+            f"Source: {source} [{status_label}] · Calculated from {count} downloadable "
+            f"Nasdaq-100 securities{chunk_note}."
+        )
+        return safe_float(b50), safe_float(b200), count, note, source, source_status
     except Exception as e:
         print("Breadth download failed:", e)
-        return None, None, 0, "Breadth unavailable on this run; neutral breadth score applied."
-
+        return (
+            None, None, 0,
+            f"Breadth unavailable on this run ({type(e).__name__}); neutral breadth score applied.",
+            source, "unavailable"
+        )
 
 def main():
     close = get_close_frame([QQQ, VIX], period="3y")
@@ -237,7 +344,7 @@ def main():
     deviation = score_d20(cur["d20"]) + score_d60(cur["d60"])
     volatility = score_vix(vix)
 
-    b50, b200, breadth_count, breadth_note = calc_breadth()
+    b50, b200, breadth_count, breadth_note, breadth_source, breadth_source_status = calc_breadth()
     breadth = breadth_score(b50, b200)
 
     total = int(round(trend + momentum + deviation + volatility + breadth))
@@ -410,6 +517,8 @@ def main():
             "ma50_pct": b50,
             "ma200_pct": b200,
             "constituents_used": breadth_count,
+            "source": breadth_source,
+            "source_status": breadth_source_status,
             "note": breadth_note,
         },
         "checklist": checklist,
