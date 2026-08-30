@@ -1,0 +1,54 @@
+{
+  "meta": {
+    "updated_at": "Run GitHub Actions once",
+    "price_date": null,
+    "symbol": "QQQ",
+    "method": "NASDAQ Trend System V2"
+  },
+  "market": {
+    "close": null,
+    "daily_change_pct": null,
+    "vix": null,
+    "ma20": null,
+    "ma60": null,
+    "ma120": null,
+    "ma200": null,
+    "d20": null,
+    "d60": null,
+    "d120": null,
+    "d200": null,
+    "rsi14": null,
+    "rsi_state": "",
+    "mom20_pct": null,
+    "mom60_pct": null,
+    "ma200_slope20_pct": null
+  },
+  "score": {
+    "total": 50,
+    "state": "WAITING FOR DATA",
+    "trend": "→",
+    "components": {
+      "trend": 0,
+      "momentum": 0,
+      "deviation": 0,
+      "volatility": 0,
+      "breadth": 0
+    }
+  },
+  "signal": {
+    "regime": "NOT INITIALIZED",
+    "action": "RUN WORKFLOW",
+    "message": "Run the GitHub Actions workflow once to generate live data.",
+    "reclaim_ma20": false,
+    "reclaim_ma60": false,
+    "major_reclaim_ma200": false
+  },
+  "breadth": {
+    "ma50_pct": null,
+    "ma200_pct": null,
+    "constituents_used": 0,
+    "note": "Waiting for first data build."
+  },
+  "checklist": [],
+  "chart": []
+}

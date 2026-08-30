@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NASDAQ Trend System V2</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">NASDAQ-100 TECHNICAL ENGINE</div>
+        <h1>Trend System <span>V2</span></h1>
+      </div>
+      <div class="update-box">
+        <div class="label">最后更新</div>
+        <div id="updatedAt">--</div>
+      </div>
+    </header>
+
+    <section class="hero-grid">
+      <article class="panel score-panel">
+        <div class="panel-title">TECHNICAL SCORE</div>
+        <div class="score-wrap">
+          <div class="score-ring" id="scoreRing">
+            <div>
+              <div class="score" id="score">--</div>
+              <div class="score-max">/ 100</div>
+            </div>
+          </div>
+          <div class="score-meta">
+            <div class="state" id="state">LOADING</div>
+            <div class="trend" id="scoreTrend">--</div>
+            <div class="action" id="action">--</div>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel market-panel">
+        <div class="panel-title">MARKET REGIME</div>
+        <div class="regime" id="regime">--</div>
+        <div class="price-row">
+          <div>
+            <span class="label">QQQ</span>
+            <strong id="price">--</strong>
+          </div>
+          <div>
+            <span class="label">1D</span>
+            <strong id="dailyChange">--</strong>
+          </div>
+          <div>
+            <span class="label">VIX</span>
+            <strong id="vix">--</strong>
+          </div>
+        </div>
+        <div class="signal-line" id="signalLine">等待数据...</div>
+      </article>
+
+      <article class="panel zones-panel">
+        <div class="panel-title">BUY / RISK ZONES</div>
+        <div class="zone-list">
+          <div class="zone"><span>MA20</span><strong id="ma20">--</strong><em id="d20">--</em></div>
+          <div class="zone"><span>MA60</span><strong id="ma60">--</strong><em id="d60">--</em></div>
+          <div class="zone"><span>MA120</span><strong id="ma120">--</strong><em id="d120">--</em></div>
+          <div class="zone"><span>MA200</span><strong id="ma200">--</strong><em id="d200">--</em></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="metrics-grid">
+      <article class="metric-card">
+        <span>Trend</span><strong id="trendScore">--</strong><small>/40</small>
+      </article>
+      <article class="metric-card">
+        <span>Momentum</span><strong id="momentumScore">--</strong><small>/25</small>
+      </article>
+      <article class="metric-card">
+        <span>Deviation</span><strong id="deviationScore">--</strong><small>/15</small>
+      </article>
+      <article class="metric-card">
+        <span>Volatility</span><strong id="volatilityScore">--</strong><small>/10</small>
+      </article>
+      <article class="metric-card">
+        <span>Breadth</span><strong id="breadthScore">--</strong><small>/10</small>
+      </article>
+      <article class="metric-card">
+        <span>RSI 14</span><strong id="rsi">--</strong><small id="rsiState"></small>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel chart-panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">QQQ + MOVING AVERAGES</div>
+            <div class="subtle">MA20 / MA60 / MA120 / MA200</div>
+          </div>
+          <div class="legend">
+            <span>Price</span><span>20</span><span>60</span><span>120</span><span>200</span>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+      </article>
+
+      <article class="panel checklist-panel">
+        <div class="panel-title">SIGNAL CHECKLIST</div>
+        <div id="checklist" class="checklist"></div>
+      </article>
+    </section>
+
+    <section class="content-grid lower">
+      <article class="panel">
+        <div class="panel-title">BREADTH</div>
+        <div class="breadth-box">
+          <div>
+            <span>Nasdaq-100 > MA50</span>
+            <strong id="breadth50">--</strong>
+          </div>
+          <div>
+            <span>Nasdaq-100 > MA200</span>
+            <strong id="breadth200">--</strong>
+          </div>
+        </div>
+        <div class="subtle" id="breadthNote"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-title">RULE ENGINE</div>
+        <div class="rules">
+          <p><b>允许做多：</b> QQQ &gt; MA200 且 MA200 向上</p>
+          <p><b>Buy 1：</b> 牛市中重新站回 MA20</p>
+          <p><b>Buy 2：</b> 牛市中重新站回 MA60</p>
+          <p><b>Reduce：</b> 连续 5 日低于 MA60 且 MA20 &lt; MA60</p>
+          <p><b>Bear：</b> QQQ &lt; MA200 且 MA200 向下</p>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>Data engine: GitHub Actions + Python + yfinance</span>
+      <span>Educational technical dashboard — not investment advice.</span>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
