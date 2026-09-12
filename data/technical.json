@@ -1,37 +1,37 @@
 {
   "meta": {
-    "updated_at": "2026-09-11 00:16 UTC",
-    "price_date": "2026-09-09",
+    "updated_at": "2026-09-12 00:24 UTC",
+    "price_date": "2026-09-10",
     "symbol": "QQQ",
     "method": "NASDAQ Trend System V2"
   },
   "market": {
-    "close": 716.31,
-    "daily_change_pct": -0.2854,
-    "vix": 17.84,
-    "ma20": 717.278,
-    "ma60": 713.3548,
-    "ma120": 688.6452,
-    "ma200": 657.9963,
-    "d20": -0.135,
-    "d60": 0.4143,
-    "d120": 4.0173,
-    "d200": 8.8623,
-    "rsi14": 51.6646,
-    "rsi_state": "Neutral+",
-    "mom20_pct": -0.2979,
-    "mom60_pct": -0.5882,
-    "ma200_slope20_pct": 1.5683
+    "close": 708.69,
+    "daily_change_pct": -1.0638,
+    "vix": 15.84,
+    "ma20": 716.5275,
+    "ma60": 712.7799,
+    "ma120": 689.6207,
+    "ma200": 658.622,
+    "d20": -1.0938,
+    "d60": -0.5738,
+    "d120": 2.7652,
+    "d200": 7.6019,
+    "rsi14": 46.3211,
+    "rsi_state": "Weakening",
+    "mom20_pct": -2.0741,
+    "mom60_pct": -4.6413,
+    "ma200_slope20_pct": 1.5744
   },
   "score": {
-    "total": 82,
-    "state": "BULLISH",
-    "trend": "↑ IMPROVING",
+    "total": 67,
+    "state": "BULL PULLBACK",
+    "trend": "→ STABLE",
     "components": {
-      "trend": 35,
-      "momentum": 17,
+      "trend": 27,
+      "momentum": 12,
       "deviation": 15,
-      "volatility": 10,
+      "volatility": 8,
       "breadth": 5
     }
   },
@@ -44,7 +44,7 @@
     "major_reclaim_ma200": false
   },
   "breadth": {
-    "ma50_pct": 38.0,
+    "ma50_pct": 36.0,
     "ma200_pct": 53.0,
     "constituents_used": 100,
     "source": "Embedded fallback (2026 list)",
@@ -54,7 +54,7 @@
   "checklist": [
     {
       "title": "Price > MA200",
-      "detail": "$716.31 vs $658.00",
+      "detail": "$708.69 vs $658.62",
       "status": "ok"
     },
     {
@@ -64,23 +64,23 @@
     },
     {
       "title": "MA20 > MA60",
-      "detail": "$717.28 vs $713.35",
+      "detail": "$716.53 vs $712.78",
       "status": "ok"
     },
     {
       "title": "MA60 > MA120",
-      "detail": "$713.35 vs $688.65",
+      "detail": "$712.78 vs $689.62",
       "status": "ok"
     },
     {
       "title": "MA120 > MA200",
-      "detail": "$688.65 vs $658.00",
+      "detail": "$689.62 vs $658.62",
       "status": "ok"
     },
     {
       "title": "RSI",
-      "detail": "RSI(14) = 51.7 · Neutral+",
-      "status": "ok"
+      "detail": "RSI(14) = 46.3 · Weakening",
+      "status": "warn"
     },
     {
       "title": "Breadth > MA200",
@@ -89,14 +89,6 @@
     }
   ],
   "chart": [
-    {
-      "date": "2025-08-27",
-      "close": 570.7412,
-      "ma20": 567.7058,
-      "ma60": 552.1592,
-      "ma120": 514.897,
-      "ma200": 514.5077
-    },
     {
       "date": "2025-08-28",
       "close": 574.314,
@@ -679,7 +671,7 @@
       "ma20": 610.248,
       "ma60": 607.9165,
       "ma120": 585.4116,
-      "ma200": 546.1729
+      "ma200": 546.173
     },
     {
       "date": "2025-12-11",
@@ -759,7 +751,7 @@
       "ma20": 616.6119,
       "ma60": 611.0386,
       "ma120": 591.2027,
-      "ma200": 552.3124
+      "ma200": 552.3125
     },
     {
       "date": "2025-12-26",
@@ -2168,6 +2160,14 @@
       "ma60": 713.3548,
       "ma120": 688.6452,
       "ma200": 657.9963
+    },
+    {
+      "date": "2026-09-10",
+      "close": 708.69,
+      "ma20": 716.5275,
+      "ma60": 712.7799,
+      "ma120": 689.6207,
+      "ma200": 658.622
     }
   ]
 }
