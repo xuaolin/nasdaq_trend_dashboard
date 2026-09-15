@@ -1,51 +1,51 @@
 {
   "meta": {
-    "updated_at": "2026-09-12 00:24 UTC",
-    "price_date": "2026-09-10",
+    "updated_at": "2026-09-15 00:43 UTC",
+    "price_date": "2026-09-11",
     "symbol": "QQQ",
     "method": "NASDAQ Trend System V2"
   },
   "market": {
-    "close": 708.69,
-    "daily_change_pct": -1.0638,
-    "vix": 15.84,
-    "ma20": 716.5275,
-    "ma60": 712.7799,
-    "ma120": 689.6207,
-    "ma200": 658.622,
-    "d20": -1.0938,
-    "d60": -0.5738,
-    "d120": 2.7652,
-    "d200": 7.6019,
-    "rsi14": 46.3211,
-    "rsi_state": "Weakening",
-    "mom20_pct": -2.0741,
-    "mom60_pct": -4.6413,
-    "ma200_slope20_pct": 1.5744
+    "close": 714.88,
+    "daily_change_pct": 0.8734,
+    "vix": 17.1,
+    "ma20": 715.668,
+    "ma60": 712.5436,
+    "ma120": 690.739,
+    "ma200": 659.2568,
+    "d20": -0.1101,
+    "d60": 0.3279,
+    "d120": 3.495,
+    "d200": 8.4373,
+    "rsi14": 50.775,
+    "rsi_state": "Neutral+",
+    "mom20_pct": -2.3481,
+    "mom60_pct": -1.9448,
+    "ma200_slope20_pct": 1.5805
   },
   "score": {
-    "total": 67,
-    "state": "BULL PULLBACK",
+    "total": 82,
+    "state": "BULLISH",
     "trend": "→ STABLE",
     "components": {
-      "trend": 27,
-      "momentum": 12,
+      "trend": 35,
+      "momentum": 17,
       "deviation": 15,
-      "volatility": 8,
+      "volatility": 10,
       "breadth": 5
     }
   },
   "signal": {
-    "regime": "BULL MARKET",
-    "action": "HOLD / BUY PULLBACK",
-    "message": "QQQ 位于上升的 MA200 上方：长期多头结构仍有效，优先等待回调买点。",
+    "regime": "BULL PULLBACK",
+    "action": "BUY 2",
+    "message": "牛市结构中重新站回 MA60：中期回调买点信号。",
     "reclaim_ma20": false,
-    "reclaim_ma60": false,
+    "reclaim_ma60": true,
     "major_reclaim_ma200": false
   },
   "breadth": {
-    "ma50_pct": 36.0,
-    "ma200_pct": 53.0,
+    "ma50_pct": 41.0,
+    "ma200_pct": 55.0,
     "constituents_used": 100,
     "source": "Embedded fallback (2026 list)",
     "source_status": "fallback",
@@ -54,49 +54,41 @@
   "checklist": [
     {
       "title": "Price > MA200",
-      "detail": "$708.69 vs $658.62",
+      "detail": "$714.88 vs $659.26",
       "status": "ok"
     },
     {
       "title": "MA200 slope",
-      "detail": "20-session slope +1.57%",
+      "detail": "20-session slope +1.58%",
       "status": "ok"
     },
     {
       "title": "MA20 > MA60",
-      "detail": "$716.53 vs $712.78",
+      "detail": "$715.67 vs $712.54",
       "status": "ok"
     },
     {
       "title": "MA60 > MA120",
-      "detail": "$712.78 vs $689.62",
+      "detail": "$712.54 vs $690.74",
       "status": "ok"
     },
     {
       "title": "MA120 > MA200",
-      "detail": "$689.62 vs $658.62",
+      "detail": "$690.74 vs $659.26",
       "status": "ok"
     },
     {
       "title": "RSI",
-      "detail": "RSI(14) = 46.3 · Weakening",
-      "status": "warn"
+      "detail": "RSI(14) = 50.8 · Neutral+",
+      "status": "ok"
     },
     {
       "title": "Breadth > MA200",
-      "detail": "53.0% of constituents",
+      "detail": "55.0% of constituents",
       "status": "ok"
     }
   ],
   "chart": [
-    {
-      "date": "2025-08-28",
-      "close": 574.314,
-      "ma20": 568.3064,
-      "ma60": 552.9947,
-      "ma120": 515.615,
-      "ma200": 514.8346
-    },
     {
       "date": "2025-08-29",
       "close": 567.666,
@@ -534,7 +526,7 @@
       "close": 606.6441,
       "ma20": 617.1034,
       "ma60": 597.8527,
-      "ma120": 573.2679,
+      "ma120": 573.268,
       "ma200": 538.8707
     },
     {
@@ -559,7 +551,7 @@
       "ma20": 615.6801,
       "ma60": 599.2962,
       "ma120": 575.3058,
-      "ma200": 540.0706
+      "ma200": 540.0707
     },
     {
       "date": "2025-11-20",
@@ -1063,7 +1055,7 @@
       "ma20": 611.4781,
       "ma60": 615.4783,
       "ma120": 607.9013,
-      "ma200": 581.9428
+      "ma200": 581.9429
     },
     {
       "date": "2026-02-24",
@@ -2168,6 +2160,14 @@
       "ma60": 712.7799,
       "ma120": 689.6207,
       "ma200": 658.622
+    },
+    {
+      "date": "2026-09-11",
+      "close": 714.88,
+      "ma20": 715.668,
+      "ma60": 712.5436,
+      "ma120": 690.739,
+      "ma200": 659.2568
     }
   ]
 }
